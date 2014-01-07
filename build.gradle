@@ -1,0 +1,67 @@
+ext {
+    provider = "TimTheSinner"
+}
+
+project(':plugin.video.cloudshare-src') { ext { pluginName = "Cloud Share Streaming" } }
+project(':repository.github.cloudshare-src') { ext { pluginName = "Cloud Share Repository" } }
+
+subprojects {
+    ext {
+        fullPluginName = "${project.name.minus('-src')}"
+        pluginName = pluginName ?: fullPluginName.split('\\.')[-1]
+        archiveDir = new File(fullPluginName, new File("${project.projectDir}").parentFile)
+        addon_xml = new File("addon.xml", archiveDir)
+        changelog_txt = new File("changelog.txt", archiveDir)
+        try {
+            version = addon_xml.exists() ? (new XmlSlurper().parse(addon_xml)?.find { 'addon' == it.name() }?.attributes()['version'] ?: '0.0.0') : '0.0.0'
+        } catch(e) {
+            version = '0.0.0'
+            println "Could not parse version from ${addon_xml}, removing config so it gets re-created"
+            if (addon_xml.exists()) {
+                addon_xml.delete()
+            }
+        }
+    }
+    
+    task ensureLayout() {
+        if (! archiveDir.exists()) {
+            println "$archiveDir did not exist, creating"
+            archiveDir.mkdirs()
+        }
+        
+        if (! addon_xml.exists()) {
+            println "$addon_xml did not exist, creating, you must fill in this xml file!"
+            addon_xml.createNewFile()
+            addon_xml << """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="${fullPluginName}"
+       name="${pluginName.capitalize()}"
+       version="${version}"
+       provider-name="${provider}">
+    <requires>
+        <import addon="xbmc.python" version="2.1.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="default.py">
+        <provides></provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <summary></summary>
+        <description></description>
+        <platform>all</platform>
+    </extension>
+</addon>
+"""
+        }
+        
+        if (! changelog_txt.exists()) {
+            println "$changelog_txt did not exist, creating, you should probably fill in this file!"
+            changelog_txt.createNewFile()
+        }
+    }
+    
+    task archive(type: Zip, dependsOn: ensureLayout) {
+    println "Project ${project.name.minus('-src')}"
+    println archiveDir
+    destinationDir = archiveDir
+    
+    }
+}
