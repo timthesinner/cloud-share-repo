@@ -2,28 +2,53 @@ ext {
     provider = "TimTheSinner"
 }
 
-project(':plugin.video.cloudshare-src') { ext { pluginName = "Cloud Share Streaming" } }
-project(':repository.github.cloudshare-src') { ext { pluginName = "Cloud Share Repository" } }
+def copyMetaData(project) {
+    if (project.archive_addon_xml.exists()) {
+        project.archive_addon_xml.delete()
+    }
+    project.archive_addon_xml.createNewFile()
+    project.archive_addon_xml << project.addon_xml.text
+    
+    if (project.archive_changelog_txt.exists()) {
+        project.archive_changelog_txt.delete()
+    }
+    project.archive_changelog_txt.createNewFile()
+    project.archive_changelog_txt << project.changelog_txt.text
+}
 
-subprojects {
-    ext {
-        fullPluginName = "${project.name.minus('-src')}"
-        pluginName = pluginName ?: fullPluginName.split('\\.')[-1]
-        archiveDir = new File(fullPluginName, new File("${project.projectDir}").parentFile)
-        addon_xml = new File("addon.xml", archiveDir)
-        changelog_txt = new File("changelog.txt", archiveDir)
-        try {
-            version = addon_xml.exists() ? (new XmlSlurper().parse(addon_xml)?.find { 'addon' == it.name() }?.attributes()['version'] ?: '0.0.0') : '0.0.0'
-        } catch(e) {
-            version = '0.0.0'
-            println "Could not parse version from ${addon_xml}, removing config so it gets re-created"
-            if (addon_xml.exists()) {
-                addon_xml.delete()
+subprojects {    
+    task initProps << {
+        project.ext {
+            fullPluginName = "${project.name.minus('-src')}"
+            
+            addon_xml = new File("addon.xml", new File("${project.projectDir}"))
+            changelog_txt = new File("changelog.txt", new File("${project.projectDir}"))
+            
+            pluginName = project.pluginName ?: fullPluginName.split('\\.')[-1]
+            archiveDir = new File(fullPluginName, new File("${project.projectDir}").parentFile)
+            archive_addon_xml = new File("addon.xml", archiveDir)
+            archive_changelog_txt = new File("changelog.txt", archiveDir)
+            try {
+                pluginVersion = addon_xml.exists() ? (new XmlSlurper().parse(addon_xml)?.find { 'addon' == it.name() }?.attributes()['version'] ?: '0.0.0') : '0.0.0'
+            } catch(e) {
+                pluginVersion = '0.0.0'
+                println "Could not parse version from ${addon_xml}, removing config so it gets re-created"
+                if (addon_xml.exists()) {
+                    addon_xml.delete()
+                }
             }
+            
+            if (project.hasProperty('changelog')) {
+                changelog = changelog.split(',').collect { "  - ${it.trim()}" }.join('\n')
+            } else {
+                changelog = '  - UPDATE_CHANGE_REASON'
+            }
+            println "Initialized $project\n${project.ext}"
         }
     }
-    
-    task ensureLayout() {
+        
+    task ensureLayout(dependsOn: initProps) << {
+        println "Laying out $project\n${project.ext}"
         if (! archiveDir.exists()) {
             println "$archiveDir did not exist, creating"
             archiveDir.mkdirs()
@@ -35,7 +60,7 @@ subprojects {
             addon_xml << """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="${fullPluginName}"
        name="${pluginName.capitalize()}"
-       version="${version}"
+       version="${pluginVersion}"
        provider-name="${provider}">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -55,13 +80,47 @@ subprojects {
         if (! changelog_txt.exists()) {
             println "$changelog_txt did not exist, creating, you should probably fill in this file!"
             changelog_txt.createNewFile()
+            changelog_txt << """[B]v${pluginVersion} (${new java.text.SimpleDateFormat("EEEEE, dd MMMMM yyyy").format(new Date())}):[/B]
+  - Initial plugin version
+"""
+        }
+        
+        copyMetaData(project);
+    }
+
+    task release(dependsOn: ensureLayout) << {
+        def pluginVersionInts = pluginVersion.split('\\.').collect{ Integer.valueOf(it); }
+        pluginVersionInts[-1] += 1
+        def nextPluginVersion = pluginVersionInts.join('.')
+        
+        addon_xml.write(addon_xml.text.replace("version=\"${pluginVersion}\"", "version=\"${nextPluginVersion}\""))
+        changelog_txt.write("""[B]v${nextPluginVersion} (${new java.text.SimpleDateFormat("EEEEE, dd MMMMM yyyy").format(new Date())}):[/B]
+${changelog}
+
+${changelog_txt.text}
+""")
+        
+        copyMetaData(project);
+        project.ext.pluginVersion = nextPluginVersion
+    }
+    
+    task doArchive(dependsOn: ensureLayout) << {
+        def destFile = new File("${project.name.minus('-src')}-${pluginVersion}.zip", archiveDir)
+        
+        ant.zip(destfile: destFile.getAbsolutePath()) {
+            fileset(dir: '.') {
+                exclude(name: '**.gradle')
+            }
         }
     }
+    doArchive.mustRunAfter release
     
-    task archive(type: Zip, dependsOn: ensureLayout) {
-    println "Project ${project.name.minus('-src')}"
-    println archiveDir
-    destinationDir = archiveDir
-    
-    }
+    task archive(dependsOn: doArchive) << { parent.archive.execute() }
 }
+
+task archive(type:Exec) {
+    workingDir './'
+    //Configured for windows
+    commandLine 'cmd', '/c', 'addons_xml_generator.py'
+}
+archive.dependsOn(subprojects.doArchive)
