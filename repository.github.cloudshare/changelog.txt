@@ -1,0 +1,2 @@
+[B]v1.0.0 (Sunday, 12 January 2014):[/B]
+  - Initial plugin repository

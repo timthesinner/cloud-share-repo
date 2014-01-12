@@ -43,12 +43,10 @@ subprojects {
             } else {
                 changelog = '  - UPDATE_CHANGE_REASON'
             }
-            println "Initialized $project\n${project.ext}"
         }
     }
         
     task ensureLayout(dependsOn: initProps) << {
-        println "Laying out $project\n${project.ext}"
         if (! archiveDir.exists()) {
             println "$archiveDir did not exist, creating"
             archiveDir.mkdirs()

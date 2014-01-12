@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.cloudshare" name="Cloud Share Streaming" version="0.0.0" provider-name="TimTheSinner">
+    <requires>
+        <import addon="xbmc.python" version="2.1.0"/>
+    </requires>
+    
+    <extension point="xbmc.python.pluginsource" library="default.py">
+        <provides>Video</provides>
+    </extension>
+    
+    <extension point="xbmc.addon.metadata">
+        <summary>Media streaming plugin for a CloudShare host</summary>
+        <description>Visit BLAH for support</description>
+        <platform>all</platform>
+    </extension>
+    
+    <!-- Allow automatic updates to this plugin without deploying the cloud share repository -->
+    <extension point="xbmc.addon.repository" name="CloudShare Add-On Repository">
+        <info compressed="false">https://github.com/timthesinner/cloud-share-repo/addons.xml</info>
+        <checksum>https://github.com/timthesinner/cloud-share-repo/addons.xml.md5</checksum>
+        <datadir zip="true">https://github.com/timthesinner/cloud-share-repo</datadir>
+    </extension>
+</addon>
