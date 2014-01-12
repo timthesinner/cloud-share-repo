@@ -14,6 +14,14 @@ def copyMetaData(project) {
     }
     project.archive_changelog_txt.createNewFile()
     project.archive_changelog_txt << project.changelog_txt.text
+    
+    if (project.icon_png.exists()) {
+        if (project.archive_icon_png.exists()) {
+            project.archive_icon_png.delete()
+        }
+        project.archive_icon_png.createNewFile()
+        project.archive_icon_png.bytes = project.icon_png.bytes
+    }
 }
 
 subprojects {    
@@ -23,11 +31,13 @@ subprojects {
             
             addon_xml = new File("addon.xml", new File("${project.projectDir}"))
             changelog_txt = new File("changelog.txt", new File("${project.projectDir}"))
+            icon_png = new File('icon.png', new File("${project.projectDir}"))
             
             pluginName = project.pluginName ?: fullPluginName.split('\\.')[-1]
             archiveDir = new File(fullPluginName, new File("${project.projectDir}").parentFile)
             archive_addon_xml = new File("addon.xml", archiveDir)
             archive_changelog_txt = new File("changelog.txt", archiveDir)
+            archive_icon_png = new File('icon.png', archiveDir)
             try {
                 pluginVersion = addon_xml.exists() ? (new XmlSlurper().parse(addon_xml)?.find { 'addon' == it.name() }?.attributes()['version'] ?: '0.0.0') : '0.0.0'
             } catch(e) {

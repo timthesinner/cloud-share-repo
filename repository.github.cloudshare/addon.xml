@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="repository.github.cloudshare" name="Cloud Share Repository" version="0.0.0" provider-name="TimTheSinner">
-        <extension point="xbmc.addon.repository" name="CloudShare Add-On Repository">
-                <info compressed="false">https://github.com/timthesinner/cloud-share-repo/raw/master/addons.xml</info>
-                <checksum>https://github.com/timthesinner/cloud-share-repo/raw/master/addons.xml.md5</checksum>
-                <datadir zip="true">https://github.com/timthesinner/cloud-share-repo/raw/master</datadir>
-        </extension>
-        <extension point="xbmc.addon.metadata">
-                <summary>Install Addons from https://github.com/timthesinner/cloud-share-repo</summary>
-                <description>Download and install addons from the CloudShare repository.</description>
-                <platform>all</platform>
-        </extension>
+    <extension point="xbmc.addon.repository" name="CloudShare Add-On Repository">
+        <info compressed="false">https://github.com/timthesinner/cloud-share-repo/raw/master/addons.xml</info>
+        <checksum>https://github.com/timthesinner/cloud-share-repo/raw/master/addons.xml.md5</checksum>
+        <datadir zip="true">https://github.com/timthesinner/cloud-share-repo/raw/master</datadir>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <summary>Install Addons</summary>
+        <description>Download and install addons from the CloudShare repository.</description>
+        <disclaimer></disclaimer>
+        <platform>all</platform>
+    </extension>
 </addon>
