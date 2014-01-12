@@ -69,9 +69,9 @@ class Generator:
                     if ( line.find( "<?xml" ) >= 0 ): continue
                     # add line
                     if sys.version < '3':
-                        addon_xml += "\t" + unicode( line.rstrip() + "\n", "UTF-8" )
+                        addon_xml += "    " + unicode( line.rstrip() + "\n", "UTF-8" )
                     else:
-                        addon_xml += "\t" + line.rstrip() + "\n"
+                        addon_xml += "    " + line.rstrip() + "\n"
                 # we succeeded so add to our final addons.xml text
                 addons_xml += addon_xml.rstrip() + "\n\n"
             except Exception as e:
