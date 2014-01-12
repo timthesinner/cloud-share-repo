@@ -106,7 +106,7 @@ ${changelog_txt.text}
         def destFile = new File("${project.name.minus('-src')}-${pluginVersion}.zip", archiveDir)
         
         ant.zip(destfile: destFile.getAbsolutePath()) {
-            fileset(dir: '.') {
+            zipfileset(dir: '.', prefix: "${project.name.minus('-src')}") {
                 exclude(name: '**.gradle')
             }
         }
