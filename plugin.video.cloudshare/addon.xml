@@ -2,6 +2,8 @@
 <addon id="plugin.video.cloudshare" name="Cloud Share Streaming" version="0.0.0" provider-name="TimTheSinner">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
+        <!--  <import addon="script.module.cloudshare.common"/> -->
+        <import addon="plugin.service.cloudshare"/>
     </requires>
     
     <extension point="xbmc.python.pluginsource" library="default.py">
@@ -9,7 +11,7 @@
     </extension>
     
     <extension point="xbmc.addon.metadata">
-        <summary>Media streaming plugin for a CloudShare host</summary>
+        <summary>Media streaming plugin for a Cloud Share Streaming hub</summary>
         <description>Visit BLAH for support</description>
         <platform>all</platform>
     </extension>

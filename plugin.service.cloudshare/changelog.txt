@@ -1,0 +1,2 @@
+[B]v0.0.0 (Friday, 17 January 2014):[/B]
+  - Initial plugin version

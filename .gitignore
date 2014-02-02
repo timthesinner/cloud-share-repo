@@ -2,3 +2,6 @@
 /plugin.video.cloudshare-src
 /repository.github.cloudshare-src
 /.gradle
+/plugin.service.cloudshare-src
+/script.module.cloudshare.common-src
+/.pydevproject

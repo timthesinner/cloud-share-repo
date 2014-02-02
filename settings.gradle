@@ -1,1 +1,1 @@
-include "plugin.video.cloudshare-src", "repository.github.cloudshare-src"
+include "plugin.service.cloudshare-src", "plugin.video.cloudshare-src", "repository.github.cloudshare-src"

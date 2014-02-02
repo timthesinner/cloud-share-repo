@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.service.cloudshare" name="Cloud Share Streaming Service"
+	version="0.0.0" provider-name="TimTheSinner">
+
+	<requires>
+		<import addon="xbmc.python" version="2.1.0" />
+	</requires>
+
+	<extension point="xbmc.service" library="default.py" start="startup"></extension>
+
+	<extension point="xbmc.addon.metadata">
+		<summary>Cloud Share Streaming Discovery Service</summary>
+		<description>Automatically discover and link with cloud share stream hubs</description>
+		<platform>all</platform>
+	</extension>
+	
+	<!-- Allow automatic updates to this plugin without deploying the cloud share repository -->
+    <extension point="xbmc.addon.repository" name="CloudShare Add-On Repository">
+        <info compressed="false">https://github.com/timthesinner/cloud-share-repo/raw/master/addons.xml</info>
+        <checksum>https://github.com/timthesinner/cloud-share-repo/raw/master/addons.xml.md5</checksum>
+        <datadir zip="true">https://github.com/timthesinner/cloud-share-repo/raw/master</datadir>
+    </extension>
+</addon>
